@@ -3,8 +3,11 @@ from html import escape
 
 LANES = ["lifecycle", "dns", "cert", "whois", "report"]
 COLORS = {
-    "lifecycle": "#6b7280", "dns": "#2563eb", "cert": "#16a34a",
-    "whois": "#9333ea", "report": "#dc2626",
+    "lifecycle": "#6b7280",
+    "dns": "#2563eb",
+    "cert": "#16a34a",
+    "whois": "#9333ea",
+    "report": "#dc2626",
 }
 W, LEFT, RIGHT, TOP, LANE_H = 960, 90, 30, 30, 44
 
@@ -15,8 +18,10 @@ def _t(s):
 
 def _tip(e):
     conf = "unspecified" if e["confidence"] is None else f"{e['confidence']:.2f}"
-    return (f"{e['ts']}  {e['type']}\n{e['summary']}\n"
-            f"source: {e['source']}\nretrieved: {e['retrieved_at']}\nconfidence: {conf}")
+    return (
+        f"{e['ts']}  {e['type']}\n{e['summary']}\n"
+        f"source: {e['source']}\nretrieved: {e['retrieved_at']}\nconfidence: {conf}"
+    )
 
 
 def _svg(events):
@@ -24,8 +29,10 @@ def _svg(events):
     span = (hi - lo) or 1
     height = TOP + LANE_H * len(LANES) + 30
     x = lambda ts: LEFT + (_t(ts) - lo) / span * (W - LEFT - RIGHT)  # noqa: E731
-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {height}" '
-           f'width="100%" role="img">']
+    out = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {height}" '
+        f'width="100%" role="img">'
+    ]
     for i, lane in enumerate(LANES):
         y = TOP + i * LANE_H + LANE_H / 2
         out.append(f'<line x1="{LEFT}" x2="{W - RIGHT}" y1="{y}" y2="{y}" stroke="#e5e7eb"/>')
@@ -34,8 +41,10 @@ def _svg(events):
         ts = lo + span * tick / 4
         tx = LEFT + (W - LEFT - RIGHT) * tick / 4
         label = datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
-        out.append(f'<text x="{tx:.1f}" y="{height - 8}" font-size="11" fill="#6b7280" '
-                   f'text-anchor="middle">{label}</text>')
+        out.append(
+            f'<text x="{tx:.1f}" y="{height - 8}" font-size="11" fill="#6b7280" '
+            f'text-anchor="middle">{label}</text>'
+        )
     for e in events:
         y = TOP + LANES.index(e["category"]) * LANE_H + LANE_H / 2
         conf = e["confidence"]
@@ -44,7 +53,8 @@ def _svg(events):
         out.append(
             f'<circle cx="{x(e["ts"]):.1f}" cy="{y}" r="7" fill="{COLORS[e["category"]]}" '
             f'fill-opacity="{opacity:.2f}" stroke="#111"{dash}><title>{escape(_tip(e))}</title>'
-            f'</circle>')
+            f"</circle>"
+        )
     out.append("</svg>")
     return "\n".join(out)
 
@@ -54,12 +64,15 @@ def render(domain, events):
         f"<tr><td>{escape(e['ts'])}</td><td>{escape(e['type'])}</td>"
         f"<td>{escape(e['summary'])}</td><td>{escape(e['source'])}</td>"
         f"<td>{escape(e['retrieved_at'])}</td>"
-        f"<td>{'' if e['confidence'] is None else f'{e['confidence']:.2f}'}</td></tr>"
+        f"<td>{'' if e['confidence'] is None else f'{e["confidence"]:.2f}'}</td></tr>"
         for e in events
     )
-    body = (_svg(events) + f"<table><tr><th>time</th><th>event</th><th>detail</th>"
-            f"<th>source</th><th>retrieved</th><th>conf.</th></tr>{rows}</table>"
-            if events else "<p>No observations stored for this domain.</p>")
+    body = (
+        _svg(events) + f"<table><tr><th>time</th><th>event</th><th>detail</th>"
+        f"<th>source</th><th>retrieved</th><th>conf.</th></tr>{rows}</table>"
+        if events
+        else "<p>No observations stored for this domain.</p>"
+    )
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <title>{escape(domain)} - domain timeline</title>

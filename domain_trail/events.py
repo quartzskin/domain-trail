@@ -15,8 +15,12 @@ CATEGORY = {
     "report_link": "report",
 }
 _DNS_EVENT = {
-    "A": "ip_changed", "AAAA": "ip_changed", "NS": "ns_changed", "MX": "mx_changed",
-    "TXT": "txt_changed", "CNAME": "cname_changed",
+    "A": "ip_changed",
+    "AAAA": "ip_changed",
+    "NS": "ns_changed",
+    "MX": "mx_changed",
+    "TXT": "txt_changed",
+    "CNAME": "cname_changed",
 }
 
 
@@ -92,8 +96,12 @@ def _whois_events(rows):
             yield _event(created, "registered", f"registered {created}", r)
         if r["value"] and r["value"] != registrar:
             if registrar is not None:
-                yield _event(r["retrieved_at"], "registrar_changed",
-                             f"registrar {registrar} -> {r['value']}", r)
+                yield _event(
+                    r["retrieved_at"],
+                    "registrar_changed",
+                    f"registrar {registrar} -> {r['value']}",
+                    r,
+                )
             registrar = r["value"]
 
 
@@ -103,8 +111,12 @@ def _report_events(rows):
         if r["kind"] == "report" and r["value"] not in seen:
             seen.add(r["value"])
             title = json.loads(r["detail"])["title"]
-            yield _event(r["retrieved_at"], "report_link",
-                         f"report: {title + ' ' if title else ''}{r['value']}", r)
+            yield _event(
+                r["retrieved_at"],
+                "report_link",
+                f"report: {title + ' ' if title else ''}{r['value']}",
+                r,
+            )
 
 
 def compute(rows):
