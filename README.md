@@ -41,7 +41,7 @@ answers as observations with source `doh:cloudflare-dns.com`. Nothing is sent to
 servers, and nothing is fetched from the domain. Without `--online` the command refuses to run.
 The resolver sees the name you ask about.
 
-## Known gaps
+## Limits
 
 - The online lookup is not exercised by the tests against a real resolver, only against canned
   responses. Its output is the resolver's cached view, not necessarily what authoritative servers say.
