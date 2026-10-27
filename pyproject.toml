@@ -1,0 +1,26 @@
+[project]
+name = "domain-trail"
+version = "0.1.0"
+description = "Timeline of public observations about suspicious domains"
+requires-python = ">=3.12"
+license = "MIT"
+readme = "README.md"
+
+[project.scripts]
+domain-trail = "domain_trail.cli:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["domain_trail"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
