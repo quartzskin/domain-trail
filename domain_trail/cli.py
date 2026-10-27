@@ -37,8 +37,9 @@ def main(argv=None):
 
 def _run(args):
     if args.cmd == "lookup" and not args.online:
-        print("error: lookup talks to a public resolver; pass --online to allow it",
-              file=sys.stderr)
+        print(
+            "error: lookup talks to a public resolver; pass --online to allow it", file=sys.stderr
+        )
         return 2
     db = store.connect(args.db)
     if args.cmd == "import":
@@ -68,7 +69,7 @@ def _run(args):
         if args.cmd == "events":
             if args.json:
                 print(json.dumps(evs, indent=2))
-            for e in ([] if args.json else evs):
+            for e in [] if args.json else evs:
                 conf = "" if e["confidence"] is None else f" conf={e['confidence']:.2f}"
                 print(f"{e['ts']}  {e['type']:<17} {e['summary']}  [{e['source']}{conf}]")
         else:
