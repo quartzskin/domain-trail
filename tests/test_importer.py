@@ -7,8 +7,13 @@ from domain_trail.importer import InputError, parse
 
 
 def obs(**kw):
-    base = {"domain": "a.example", "kind": "dns", "source": "s",
-            "retrieved_at": "2025-01-01T00:00:00Z", "data": {"type": "A", "values": ["192.0.2.1"]}}
+    base = {
+        "domain": "a.example",
+        "kind": "dns",
+        "source": "s",
+        "retrieved_at": "2025-01-01T00:00:00Z",
+        "data": {"type": "A", "values": ["192.0.2.1"]},
+    }
     base.update(kw)
     return base
 
@@ -34,26 +39,34 @@ def test_wrapped_and_bare_lists_both_work():
     assert len(parse({"observations": [obs()]})) == len(parse([obs()])) == 1
 
 
-@pytest.mark.parametrize("bad", [
-    None, "text", 5, {"observations": "x"}, [1], [{}],
-    [obs(kind="http")],
-    [obs(domain="nodot")],
-    [obs(domain="bad_domain!.example")],
-    [obs(domain=7)],
-    [obs(source="")],
-    [obs(retrieved_at="yesterday")],
-    [obs(retrieved_at=None)],
-    [obs(confidence=1.5)],
-    [obs(confidence=True)],
-    [obs(data=[])],
-    [obs(data={"type": "SRV", "values": []})],
-    [obs(data={"type": "A", "values": "1.2.3.4"})],
-    [obs(data={"type": "A", "values": [1]})],
-    [obs(kind="cert", data={"issuer": "x"})],
-    [obs(kind="cert", data={"serial": "1", "issuer": "x", "not_before": "nope"})],
-    [obs(kind="report", data={"url": "javascript:alert(1)"})],
-    [obs(kind="whois", data={})],
-])
+@pytest.mark.parametrize(
+    "bad",
+    [
+        None,
+        "text",
+        5,
+        {"observations": "x"},
+        [1],
+        [{}],
+        [obs(kind="http")],
+        [obs(domain="nodot")],
+        [obs(domain="bad_domain!.example")],
+        [obs(domain=7)],
+        [obs(source="")],
+        [obs(retrieved_at="yesterday")],
+        [obs(retrieved_at=None)],
+        [obs(confidence=1.5)],
+        [obs(confidence=True)],
+        [obs(data=[])],
+        [obs(data={"type": "SRV", "values": []})],
+        [obs(data={"type": "A", "values": "1.2.3.4"})],
+        [obs(data={"type": "A", "values": [1]})],
+        [obs(kind="cert", data={"issuer": "x"})],
+        [obs(kind="cert", data={"serial": "1", "issuer": "x", "not_before": "nope"})],
+        [obs(kind="report", data={"url": "javascript:alert(1)"})],
+        [obs(kind="whois", data={})],
+    ],
+)
 def test_rejects_malformed(bad):
     with pytest.raises(InputError):
         parse(bad)

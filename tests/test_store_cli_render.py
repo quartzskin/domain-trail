@@ -52,20 +52,40 @@ def test_timeline_for_unknown_domain(tmp_path):
 
 
 def test_render_escapes_markup(db):
-    store.add(db, importer.parse([{
-        "domain": "x.example", "kind": "report", "source": "<script>alert(1)</script>",
-        "retrieved_at": "2025-01-01T00:00:00Z", "data": {"url": "https://r.example/?a=1&b=<2>"},
-    }]))
+    store.add(
+        db,
+        importer.parse(
+            [
+                {
+                    "domain": "x.example",
+                    "kind": "report",
+                    "source": "<script>alert(1)</script>",
+                    "retrieved_at": "2025-01-01T00:00:00Z",
+                    "data": {"url": "https://r.example/?a=1&b=<2>"},
+                }
+            ]
+        ),
+    )
     html = render("x.example", events.compute(store.for_domain(db, "x.example")))
     assert "<script>alert" not in html
     assert "&lt;script&gt;" in html
 
 
 def test_single_instant_does_not_divide_by_zero(db):
-    store.add(db, importer.parse([{
-        "domain": "x.example", "kind": "dns", "source": "s",
-        "retrieved_at": "2025-01-01T00:00:00Z", "data": {"type": "A", "values": ["192.0.2.1"]},
-    }]))
+    store.add(
+        db,
+        importer.parse(
+            [
+                {
+                    "domain": "x.example",
+                    "kind": "dns",
+                    "source": "s",
+                    "retrieved_at": "2025-01-01T00:00:00Z",
+                    "data": {"type": "A", "values": ["192.0.2.1"]},
+                }
+            ]
+        ),
+    )
     assert "<svg" in render("x.example", events.compute(store.for_domain(db, "x.example")))
 
 
@@ -75,8 +95,10 @@ def test_doh_lookup_parses_answers_without_network():
     def fake(url):
         seen.append(url)
         if "type=A&" in url or url.endswith("type=A"):
-            return {"Status": 0, "Answer": [
-                {"type": 1, "data": "192.0.2.4"}, {"type": 5, "data": "c.example."}]}
+            return {
+                "Status": 0,
+                "Answer": [{"type": 1, "data": "192.0.2.4"}, {"type": 5, "data": "c.example."}],
+            }
         if "type=MX" in url:
             return {"Status": 0, "Answer": [{"type": 15, "data": "10 Mail.Example."}]}
         return {"Status": 3}

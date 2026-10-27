@@ -10,4 +10,5 @@ jobs:
           python-version: "3.14"
       - run: pip install pytest ruff
       - run: ruff check .
+      - run: ruff format --check .
       - run: pytest -q
